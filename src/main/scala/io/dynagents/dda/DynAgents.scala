@@ -2,14 +2,11 @@ package io.dynagents.dda
 
 import io.dynagents.dda.DynAgents.{NeedsAgent, Stale, WorldView}
 import io.dynagents.time.Epoch
-import scalaz.{Monad, NonEmptyList}
-import scalaz.syntax.monad._
-import scalaz.syntax.traverse._
-import scalaz.syntax.std.list._
+import scalaz._, Scalaz._
 
 import scala.concurrent.duration._
 
-trait Dynagents[F[_]] {
+trait DynAgents[F[_]] {
   def initial: F[WorldView]
 
   def update(old: WorldView): F[WorldView]
@@ -48,7 +45,7 @@ object DynAgents {
 
 }
 
-class DynAgentsModule[F[_] : Monad](D: Drone[F], M: Machines[F]) extends Dynagents[F] {
+class DynAgentsModule[F[_] : Monad](D: Drone[F], M: Machines[F]) extends DynAgents[F] {
   override def initial: F[WorldView] = for {
     db <- D.getBacklog
     da <- D.getAgents
