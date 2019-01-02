@@ -40,6 +40,7 @@ object DynAgents {
           case (n, started) if backlog == 0 && (time - started).toMinutes % 60 >= 58 => n
           case (n, started) if (time - started) >= 5.hours                           => n
         }.toList.toNel
+      case _                                                                => None
     }
   }
 
