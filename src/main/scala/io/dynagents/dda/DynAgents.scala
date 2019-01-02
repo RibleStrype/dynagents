@@ -2,7 +2,8 @@ package io.dynagents.dda
 
 import io.dynagents.dda.DynAgents.{NeedsAgent, Stale, WorldView}
 import io.dynagents.time.Epoch
-import scalaz._, Scalaz._
+import scalaz.Scalaz._
+import scalaz._
 
 import scala.concurrent.duration._
 
@@ -47,20 +48,10 @@ object DynAgents {
 }
 
 class DynAgentsModule[F[_] : Monad](D: Drone[F], M: Machines[F]) extends DynAgents[F] {
-  override def initial: F[WorldView] = for {
-    db <- D.getBacklog
-    da <- D.getAgents
-    mm <- M.getManaged
-    ma <- M.getAlive
-    mt <- M.getTime
-  } yield WorldView(
-    backlog = db,
-    agents = da,
-    managed = mm,
-    alive = ma,
-    pending = Map.empty,
-    time = mt
-  )
+  override def initial: F[WorldView] =
+    ^^^^(D.getBacklog, D.getAgents, M.getManaged, M.getAlive, M.getTime) {
+      case (db, da, mm, ma, mt) => WorldView(db, da, mm, ma, Map.empty, mt)
+    }
 
   override def update(old: WorldView): F[WorldView] = for {
     snap <- initial
