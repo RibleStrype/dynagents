@@ -68,12 +68,12 @@ class DynAgentsModule[F[_] : Monad](D: Drone[F], M: Machines[F]) extends DynAgen
       update = world.copy(pending = world.pending.updated(node, world.time))
     } yield update
 
-    case Stale(nodes) => nodes.foldLeftM(world) { (w, n) =>
+    case Stale(nodes) =>
       for {
-        _ <- M.stop(n)
-        update = w.copy(pending = w.pending.updated(n, w.time))
+        stopped <- nodes.traverse(M.stop)
+        updates = stopped.map(_ -> world.time).toList.toMap
+        update = world.copy(pending = world.pending ++ updates)
       } yield update
-    }
 
     case _ => world.pure[F]
   }
