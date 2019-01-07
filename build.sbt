@@ -12,6 +12,7 @@ libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-core" % "7.2.22",
   "com.propensive" %% "contextual" % "1.1.0",
   "eu.timepit" %% "refined-scalaz" % "0.9.3",
+  "org.typelevel" %% "jawn-parser" % "0.14.0",
   "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 )
 
