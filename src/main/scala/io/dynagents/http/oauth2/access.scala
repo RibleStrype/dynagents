@@ -2,7 +2,9 @@ package io.dynagents.http.oauth2
 
 import eu.timepit.refined.api.Refined
 import eu.timepit.refined.string.Url
+import io.dynagents.http.encoding.UrlEncodedWriter
 import io.dynagents.jsonformat.JsDecoder
+import scalaz.IList
 
 final case class AccessRequest(
   code: String,
@@ -12,6 +14,21 @@ final case class AccessRequest(
   scope: String = "",
   grant_type: String = "authorization_code"
 )
+
+object AccessRequest {
+
+  import UrlEncodedWriter.ops._
+
+  implicit val encoded: UrlEncodedWriter[AccessRequest] =
+    a => IList(
+      "code" -> a.code,
+      "redirect_uri" -> a.redirect_uri.value,
+      "client_id" -> a.client_id,
+      "client_secret" -> a.client_secret,
+      "scope" -> a.scope,
+      "grant_type" -> a.grant_type
+    ).toUrlEncoded
+}
 
 final case class AccessResponse(
   access_token: String,
