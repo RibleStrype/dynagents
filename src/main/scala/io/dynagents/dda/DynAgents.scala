@@ -63,14 +63,12 @@ class DynAgentsModule[F[_] : Monad](D: Drone[F], M: Machines[F]) extends DynAgen
   } yield update
 
   override def act(world: WorldView): F[WorldView] = world match {
-    case NeedsAgent(node) => for {
-      _ <- M.start(node)
-      update = world.copy(pending = world.pending.updated(node, world.time))
-    } yield update
+    case NeedsAgent(node) =>
+      M.start(node) as world.copy(pending = world.pending.updated(node, world.time))
 
     case Stale(nodes) =>
       for {
-        stopped <- nodes.traverse(M.stop)
+        stopped <- nodes.traverse(a => M.stop(a) as a)
         updates = stopped.map(_ -> world.time).toList.toMap
         update = world.copy(pending = world.pending ++ updates)
       } yield update
